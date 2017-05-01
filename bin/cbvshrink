@@ -39,6 +39,7 @@ def main():
     ap.add_argument('--input_type', type=str, default='JCR')
     ap.add_argument('--modules', type=str, default=None)
     ap.add_argument('--outputs', type=str, default=None)
+    ap.add_argument('--quarter', type=int, default=None)
     ap.add_argument('--modouts', type=str, default=None)
     args = ap.parse_args()
 
@@ -123,6 +124,12 @@ def reduce(filename, args):
     hdul = pf.open(filename, mode = 'update' if args.inplace else 'readonly')
     mod = hdul[0].header['module']
     out = hdul[0].header['output']
+    qrt = hdul[0].header['quarter']
+
+    if args.quarter is not None:
+        if args.quarter != qrt:
+            hdul.close()
+            return
     
     if args.modouts is not None:
         modouts = np.array([np.fromstring(s, sep=',', dtype=np.int) for s in args.modouts.split(';')])
